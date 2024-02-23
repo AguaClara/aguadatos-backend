@@ -1,9 +1,11 @@
 import code
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import Column, Integer, String, ForeignKey, DECIMAL
+from sqlalchemy import Column, DateTime, Integer, String, Boolean, ForeignKey, DECIMAL
+from sqlalchemy.types import Enum as SQLAlchemyEnum
+
 
 # AWS import statement: import boto3
-import datetime
+from datetime import datetime 
 
 # For handling images: 
 # import base64
@@ -23,7 +25,7 @@ import string
 import re
 
 # For hashing passwords and security 
-import bcrypt  
+# import bcrypt  
 import hashlib
 
 # For enum values
@@ -102,12 +104,12 @@ class Configuration(db.Model):
 
     __tablename__ = "configurations"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    chemical_type = Column(Enum(ChemicalType), nullable=False)
+    chemical_type = Column(SQLAlchemyEnum(ChemicalType), nullable=False)
     chemical_concentration = Column(DECIMAL, nullable=False)
     num_filters = Column(Integer, nullable=False)
     num_clarifiers = Column(Integer, nullable=False)
 
-    plant_id = Column(Integer, ForeignKey('plants.id'), nullable=False)
+    # plant_id = Column(Integer, ForeignKey('plants.id'), nullable=False)
 
     def _init_(self, **kwargs):
         """
@@ -116,7 +118,7 @@ class Configuration(db.Model):
         self.chemical_type = kwargs.get("chemical_type")
         self.chemical_concentration = kwargs.get("chemical_concentration")
         self.num_filters = kwargs.get("num_filters")
-        self.plant_id = kwargs.get("plant_id")
+        # self.plant_id = kwargs.get("plant_id")
 
 
 class DosageEntry(db.Model):
@@ -131,8 +133,8 @@ class DosageEntry(db.Model):
 
     __tablename__ = "dosage_entries"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    created_at = Column(datetime, default=datetime.utcnow)
-    is_deleted = Column(bool, default=False)
+    created_at = Column(DateTime, default=datetime.now())
+    is_deleted = Column(Boolean, default=False)
     # SKIPPED FOR MVP: tank volumes
 
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
@@ -167,7 +169,7 @@ class CalibrationSection(db.Model):
     calculated_chemical_dose = Column(DECIMAL, nullable=False)
     slider_pos_chem_dose_ratio = Column(DECIMAL, nullable=False)
 
-    dosage_entry_id = Column(Integer, ForeignKey("dosages.id"), nullable=False)
+    dosage_entry_id = Column(Integer, ForeignKey("dosage_entries.id"), nullable=False)
 
     def _init_(self, **kwargs):
         """
@@ -198,7 +200,7 @@ class ChangeDoseSection(db.Model):
     target_coagulant_dose = Column(DECIMAL, nullable=False)
     new_slider_position = Column(DECIMAL, nullable=False)
 
-    dosage_entry_id = Column(Integer, ForeignKey("dosages.id"), nullable=False)
+    dosage_entry_id = Column(Integer, ForeignKey("dosage_entries.id"), nullable=False)
     related_calibration_id = Column(Integer, ForeignKey("calibrations.id"), nullable=True)
 
     def _init_(self, **kwargs):
