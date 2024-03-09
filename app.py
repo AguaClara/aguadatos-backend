@@ -122,7 +122,7 @@ def create_plant():
     new_plant = Plant(name=name, phone_number=phone_number, config_id=new_config.id)
     db.session.add(new_plant)
     db.session.commit()
-    return success_response(new_plant, 201)
+    return success_response(new_plant.serialize(), 201)
 
 # -- USER ROUTES ------------------------------------------------------
 @app.route("/api/users/", methods=["POST"])

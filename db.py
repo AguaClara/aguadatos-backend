@@ -35,6 +35,9 @@ class ChemicalType(Enum):
     PAC = "PAC"
     AL2SO43 = "AL2SO43"
 
+    def toJSON(self):
+        return self.value
+
 class TankLabel(Enum):
     A1 = "A1"
     A2 = "A2"
@@ -92,6 +95,18 @@ class Plant(db.Model):
         self.name = kwargs.get("name")
         self.phone_number = kwargs.get("phone_number")
         self.config_id = kwargs.get("config_id")
+    
+    def serialize(self):
+        """
+        Serializes Plant object
+        """
+        config = Configuration.query.filter_by(id=self.config_id).first()
+        return {
+            "id": self.id,
+            "name": self.name,
+            "phone_number": self.phone_number, 
+            "config_id": config.simple_serialize()
+        }
 
 
 class Configuration(db.Model):
@@ -118,8 +133,20 @@ class Configuration(db.Model):
         self.chemical_type = kwargs.get("chemical_type")
         self.chemical_concentration = kwargs.get("chemical_concentration")
         self.num_filters = kwargs.get("num_filters")
+        self.num_clarifiers = kwargs.get("num_clarifiers")
         # self.plant_id = kwargs.get("plant_id")
 
+    def simple_serialize(self):
+        """
+        Serializes Configuration object
+        """
+        return {
+            "id": self.id,
+            "chemical_type": self.chemical_type.toJSON(),
+            "chemical_concentration": str(self.chemical_concentration),
+            "num_filters": self.num_filters,
+            "num_clarifiers": self.num_clarifiers,
+        }
 
 class DosageEntry(db.Model):
     """
