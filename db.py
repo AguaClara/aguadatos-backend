@@ -72,6 +72,19 @@ class User(db.Model):
         self.email = kwargs.get("email")
         self.phone_number = kwargs.get("phone_number")
         self.plant_id = kwargs.get("plant_id")
+    
+    def serialize(self):
+        """
+        Serializes User object
+        """
+        plant = Plant.query.filter_by(id=self.plant_id).first()
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "phone_number": self.phone_number, 
+            "plant_id": plant.simple_serialize()
+        }
 
 
 class Plant(db.Model):
@@ -108,6 +121,16 @@ class Plant(db.Model):
             "config_id": config.simple_serialize()
         }
 
+    def simple_serialize(self):
+        """
+        Simple serializes Plant Object 
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "phone_number": self.phone_number
+        }
+
 
 class Configuration(db.Model):
     """
@@ -138,7 +161,7 @@ class Configuration(db.Model):
 
     def simple_serialize(self):
         """
-        Serializes Configuration object
+        Simple serializes Configuration object
         """
         return {
             "id": self.id,

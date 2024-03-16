@@ -136,16 +136,23 @@ def create_user():
     name = body.get("name")
     email = body.get("email")
     phone_number = body.get("phone_number")
+    plant_name = body.get("plant_name")
     if name is None:
         return failure_response("Please enter something for name", 400)
     if email is None:
         return failure_response("Please enter something for email", 400)
     if phone_number is None:
         return failure_response("Please enter something for phone number", 400)
-    new_user = User(name=name, email=email, phone_number=phone_number)
+    if plant_name is None:
+        return failure_response("Please choose the associated plant", 400)
+    
+    plant = Plant.query.filter_by(name=plant_name).first()
+    if plant is None:
+        return failure_response("Plant not found")
+    new_user = User(name=name, email=email, phone_number=phone_number, plant_id=plant.id)
     db.session.add(new_user)
     db.session.commit()
-    return success_response(new_user, 201)
+    return success_response(new_user.serialize(), 201)
 
 @app.route("/api/users/<int:user_id>/")
 def get_specific_user(user_id):
