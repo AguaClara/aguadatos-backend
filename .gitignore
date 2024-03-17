@@ -4,3 +4,4 @@ venv
 aguadatos.db
 .DS_Store
 .envrc
+virtualenv

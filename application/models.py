@@ -1,32 +1,7 @@
-import code
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, DateTime, Integer, String, Boolean, ForeignKey, DECIMAL
 from sqlalchemy.types import Enum as SQLAlchemyEnum
-
-
-# AWS import statement: import boto3
 from datetime import datetime 
-
-# For handling images: 
-# import base64
-# import io
-# from io import BytesIO
-# from mimetypes import guess_extension, guess_type
-# from PIL import Image
-
-# For interacting with operating systems
-import os 
-
-# Often used together to generate random strings--creating tokens, temp passwords
-import random
-import string
-
-# String searching and manipulation
-import re
-
-# For hashing passwords and security 
-# import bcrypt  
-import hashlib
+from . import db
 
 # For enum values
 from enum import Enum
@@ -43,9 +18,6 @@ class TankLabel(Enum):
     A2 = "A2"
     B1 = "B1"
     B2 = "B2"
-
-
-db = SQLAlchemy()
 
 # create tables 
 class User(db.Model):
