@@ -6,9 +6,9 @@ ChemicalTypes = {'PAC', 'AL2SO43'}
 TankLabels = {'A1', 'A2', 'B1', 'B2'}
 
 # create tables 
-class Users(db.Model):
+class User(db.Model):
     """
-    Users model 
+    User model 
     
     Many-to-one relationship with Plants table. Multiple Users can be associated with One Plant
     Delete associated Users if Plant is deleted.
@@ -23,9 +23,9 @@ class Users(db.Model):
     plant_id = Column(Integer, ForeignKey("plants.id"), nullable=False)
 
 
-class Plants(db.Model):
+class Plant(db.Model):
     """
-    Plants model 
+    Plant model 
 
     One-to-many relationship with User table. One Plant can be associated with Multiple Users.
     """
@@ -36,9 +36,9 @@ class Plants(db.Model):
     config_id = Column(Integer, ForeignKey("configurations.id"), nullable=False)
 
 
-class Configurations(db.Model):
+class Configuration(db.Model):
     """
-    Configurations Model 
+    Configuration Model 
 
     One-to-one relationship with Plants table. 
     Multiple Users can change these values and we use just use the most updated values.
