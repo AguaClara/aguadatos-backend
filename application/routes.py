@@ -1,55 +1,93 @@
 import json
-from flask import request
+from flask import request, jsonify
 from flask import current_app as app
-from .models import db, Plant, Configuration, User
+from .models import db, ChemicalTypes, TankLabels, Plants, Configurations, Users
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import or_
+from sqlalchemy.inspection import inspect
+
+# generalized serialization function
+def serialize_model(model_instance):
+    return {
+        c.key: getattr(model_instance, c.key)
+        for c in inspect(model_instance).mapper.column_attrs
+    }
 
 # generalized response formats 
-def success_response(data, code=200):
+def success_response(data, status=200):
     """
     Generalized success response function
     """
-    return json.dumps(data), code
+    return jsonify(data), status
 
-def failure_response(message, code=404):
+def failure_response(message, status=400):
     """
     Generalized failure response function
     """
-    return json.dumps({"error": message}), code
+    return jsonify({"error": message}), status
+
+# generalized body request unpacking 
+def extract_fields(body, *fields):
+    missing_fields = [field for field in fields if field not in body or body[field] is None]
+    if missing_fields:
+        return None, missing_fields
+    return [body[field] for field in fields], None
 
 # -- PLANT ROUTES ------------------------------------------------------
 @app.route("/api/plants/", methods=["POST"])
 def create_plant():
     """
     Endpoint for creating a plant
-
     """
-    body = json.loads(request.data)
-    name = body.get("name")
-    phone_number = body.get("phone_number")
-    chemical_type = body.get("chemical_type")
-    chemical_concentration = body.get("chemical_concentration")
-    num_filters = body.get("num_filters")
-    num_clarifiers = body.get("num_clarifiers")
-    if name is None:
-        return failure_response("Please enter something for name", 400)
-    if phone_number is None:
-        return failure_response("Please enter something for phone number", 400)
-    if chemical_type is None:
-        return failure_response("Please enter something for chemical type", 400)
-    if chemical_concentration is None:
-        return failure_response("Please enter something for chemical concentration", 400)
-    if num_filters is None:
-        return failure_response("Please enter something for the number of filters", 400)
-    if num_clarifiers is None:
-        return failure_response("Please enter something for the number of clarifiers", 400)
+    body = request.json
+    required_fields = [
+    "name",
+    "phone_number",
+    "chemical_type",
+    "chemical_concentration",
+    "num_filters",
+    "num_clarifiers"
+    ]
+
+    extracted_fields, missing_fields = extract_fields(body, *required_fields)
+    if missing_fields:
+        return failure_response(f"Plant missing {', '.join(missing_fields)}", 400)
+    name, phone_number, chemical_type, chemical_concentration, num_filters, num_clarifiers = extracted_fields
+
+    if chemical_type not in ChemicalTypes:
+        return failure_response(f"Chemical '{chemical_type}' invalid", 400)
+
+    # handles uniqueness constraints
+    existing_plant = existing_plant = Plants.query.filter(or_(Plants.name == name, Plants.phone_number == phone_number)).first() 
+    if existing_plant is not None:
+        if existing_plant.name == body["name"]:
+            return failure_response(f"Plant '{name}' already exists", 400)
+        if existing_plant.phone_number == body["phone_number"]:
+            return failure_response(f"Phone number '{phone_number}' already exists", 400)
+    try: 
+        new_config = Configurations(
+            chemical_type=chemical_type,
+            chemical_concentration=chemical_concentration,
+            num_filters=num_filters,
+            num_clarifiers=num_clarifiers)
+        db.session.add(new_config)
+        db.session.flush() # in event, new_plant fails, do not keep the new_config entry
+
+        new_plant = Plants(
+            name=name,
+            phone_number=phone_number, 
+            config_id=new_config.id)
+        db.session.add(new_plant)
+        db.session.commit()
+        
+        serialized_plant = serialize_model(new_plant)
+        serialized_plant['config'] = serialize_model(new_config)
+        return success_response(serialized_plant, 201)
+        # return success_response(serialized_plant, 201, headers={"Location": f"/api/plants/{new_plant.id}"})
     
-    new_config = Configuration(chemical_type=chemical_type, chemical_concentration=chemical_concentration, num_filters=num_filters, num_clarifiers=num_clarifiers)
-    db.session.add(new_config)
-    db.session.commit()
-    new_plant = Plant(name=name, phone_number=phone_number, config_id=new_config.id)
-    db.session.add(new_plant)
-    db.session.commit()
-    return success_response(new_plant.serialize(), 201)
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        return failure_response("Internal Server Error", 500)
 
 # -- USER ROUTES ------------------------------------------------------
 @app.route("/api/users/", methods=["POST"])
