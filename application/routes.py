@@ -89,6 +89,24 @@ def create_plant():
     except SQLAlchemyError as e:
         db.session.rollback()
         return failure_response("Internal Server Error", 500)
+    
+@app.route("/api/plants/<int:plant_id>/")
+def get_plant(plant_id):
+    """
+    Endpoint for getting a specific plant
+    """
+    plant = Plant.query.filter_by(id=plant_id).first()
+    if plant is None:
+        return failure_response("Plant not found.")
+    serialized_plant = serialize_model(plant)
+    return success_response(serialized_plant)
+
+@app.route("/api/plants/")
+def get_all_plants():
+    """
+    Endpoint for getting all plants
+    """
+    return success_response({"plants": [serialize_model(p) for p in Plant.query.all()]})
 
 # -- USER ROUTES ------------------------------------------------------
 @app.route("/api/users/", methods=["POST"])
@@ -151,7 +169,8 @@ def get_specific_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     if user is None:
         return failure_response("User not found!")
-    return success_response(user)
+    serialized_user = serialize_model(user)
+    return success_response(serialized_user)
 
 @app.route("/api/users/")
 def get_all_users():
@@ -159,4 +178,4 @@ def get_all_users():
     Endpoint for getting all users
     """
     # return success_response({"events": [e.serialize() for e in Event.query.order_by(Event.date.desc())]})
-    return success_response({"users": [user for user in User.query.all()]})
+    return success_response({"users": [serialize_model(u) for u in User.query.all()]})
