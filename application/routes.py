@@ -1,37 +1,9 @@
-import json
-from flask import request, jsonify
+from flask import request
 from flask import current_app as app
 from .models import db, ChemicalTypes, TankLabels, Plant, Configuration, User
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import or_
-from sqlalchemy.inspection import inspect
-
-# generalized serialization function
-def serialize_model(model_instance):
-    return {
-        c.key: getattr(model_instance, c.key)
-        for c in inspect(model_instance).mapper.column_attrs
-    }
-
-# generalized response formats 
-def success_response(data, status=200):
-    """
-    Generalized success response function
-    """
-    return jsonify(data), status
-
-def failure_response(message, status=400):
-    """
-    Generalized failure response function
-    """
-    return jsonify({"error": message}), status
-
-# generalized body request unpacking 
-def extract_fields(body, *fields):
-    missing_fields = [field for field in fields if field not in body or body[field] is None]
-    if missing_fields:
-        return None, missing_fields
-    return [body[field] for field in fields], None
+from .utils import extract_fields, serialize_model, success_response, failure_response
 
 # -- PLANT ROUTES ------------------------------------------------------
 @app.route("/api/plants/", methods=["POST"])
@@ -138,7 +110,7 @@ def create_user():
         if existing_email.email == body["email"]:
             return failure_response(f"User '{email}' already in use.")
         if existing_number.phone_number == body["phone_number"]:
-            return failure_response(f"Phone number '{phone_number}' already in use.")
+            return failure_response(f"User Phone number '{phone_number}' already in use.")
         
     # to get associated Plant ID
     plant = Plant.query.filter_by(name=plant_name).first()
