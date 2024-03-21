@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Integer, String, Boolean, ForeignKey, DECIMAL
+from sqlalchemy import Column, DateTime, Integer, String, Boolean, ForeignKey, Float
 from datetime import datetime 
 from . import db
 
@@ -46,7 +46,7 @@ class Configuration(db.Model):
     __tablename__ = "configurations"
     id = Column(Integer, primary_key=True, autoincrement=True)
     chemical_type = Column(String, nullable=False)
-    chemical_concentration = Column(DECIMAL, nullable=False)
+    chemical_concentration = Column(Float, nullable=False)
     num_filters = Column(Integer, nullable=False)
     num_clarifiers = Column(Integer, nullable=False)
 
@@ -80,14 +80,14 @@ class CalibrationSection(db.Model):
     """
     __tablename__ = "calibrations"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    slider_position = Column(DECIMAL, nullable=False)
+    slider_position = Column(Float, nullable=False)
     inflow_rate = Column(Integer, nullable=False)
     starting_volume = Column(Integer, nullable=False)
     ending_volume = Column(Integer, nullable=False)
     elapsed_seconds = Column(Integer, nullable=False)
-    calculated_flow_rate = Column(DECIMAL, nullable=False)
-    calculated_chemical_dose = Column(DECIMAL, nullable=False)
-    slider_pos_chem_dose_ratio = Column(DECIMAL, nullable=False)
+    calculated_flow_rate = Column(Float, nullable=False)
+    calculated_chemical_dose = Column(Float, nullable=False)
+    slider_pos_chem_dose_ratio = Column(Float, nullable=False)
     
     dosage_entry_id = Column(Integer, ForeignKey("dosage_entries.id"), nullable=False)
 
@@ -101,8 +101,8 @@ class ChangeDoseSection(db.Model):
     """
     __tablename__ = "change_doses"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    target_coagulant_dose = Column(DECIMAL, nullable=False)
-    new_slider_position = Column(DECIMAL, nullable=False)
+    target_coagulant_dose = Column(Float, nullable=False)
+    new_slider_position = Column(Float, nullable=False)
 
     dosage_entry_id = Column(Integer, ForeignKey("dosage_entries.id"), nullable=False)
     related_calibration_id = Column(Integer, ForeignKey("calibrations.id"), nullable=True)
