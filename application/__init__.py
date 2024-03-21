@@ -1,5 +1,6 @@
 from flask import Flask 
 from flask_sqlalchemy import SQLAlchemy
+import os
 
 # global accessible libraries
 db = SQLAlchemy()
@@ -7,7 +8,8 @@ db = SQLAlchemy()
 def create_app():
     """Initialize the core application."""
     app = Flask(__name__, instance_relative_config=False)
-    app.config.from_object('config.Config')
+    config_type = os.getenv('CONFIG_TYPE', 'config.Config')
+    app.config.from_object(config_type)
 
     # Initialize Plugins
     db.init_app(app)
