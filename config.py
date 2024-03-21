@@ -1,21 +1,33 @@
 """Flask configuration variables."""
-from os import environ, path
+import os  
 from dotenv import load_dotenv
 
-basedir = path.abspath(path.dirname(__file__))
-load_dotenv(path.join(basedir, '.env'))
+basedir = os.path.abspath(os.path.dirname(__file__))
+load_dotenv(os.path.join(basedir, '.env'))
 
 
 class Config:
     """Set Flask configuration from .env file."""
+    DEBUG = False
+    TESTING = False
 
     # General Config
-    SECRET_KEY = environ.get('SECRET_KEY')
-    FLASK_APP = environ.get('FLASK_APP')
-    FLASK_ENV = environ.get('FLASK_ENV')
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    FLASK_APP = os.environ.get('FLASK_APP')
+    FLASK_ENV = os.environ.get('FLASK_ENV')
 
     # Flask-SQLAlchemy
-    db_filename = "aguadatos.db"
-    SQLALCHEMY_DATABASE_URI = environ.get("SQLALCHEMY_DATABASE_URI", default=f"sqlite:///{path.join(basedir, db_filename)}")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("SQLALCHEMY_DATABASE_URI", default=f"sqlite:///{os.path.join(basedir, 'instance', "aguadatos.db")}")
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class ProductionConfig(Config):
+    SQLALCHEMY_ECHO = False
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+
+class TestingConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URI',
+                                             default=f"sqlite:///{os.path.join(basedir, 'instance', 'test_aguadatos.db')}")
