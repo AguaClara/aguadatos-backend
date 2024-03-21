@@ -62,7 +62,7 @@ def create_plant():
         db.session.rollback()
         return failure_response("Internal Server Error", 500)
     
-@app.route("/api/plants/<int:plant_id>/")
+@app.route("/api/plants/<int:plant_id>/", methods=["GET"])
 def get_plant(plant_id):
     """
     Endpoint for getting a specific plant
@@ -73,7 +73,7 @@ def get_plant(plant_id):
     serialized_plant = serialize_model(plant)
     return success_response(serialized_plant)
 
-@app.route("/api/plants/")
+@app.route("/api/plants/", methods=["GET"])
 def get_all_plants():
     """
     Endpoint for getting all plants
