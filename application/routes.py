@@ -108,33 +108,6 @@ def get_all_plants():
     """
     return success_response({"plants": [serialize_model(p) for p in Plant.query.all()]})
 
-@app.route("/api/plants/<int:plant_id>/", methods=["DELETE"])
-def delete_plant(plant_id):
-    """
-    Endpoint for deleting a plant by id
-
-    Must also delete associated Configuration and Users/Plant Operators
-    """
-    plant = Plant.query.filter_by(id=plant_id).first()
-    if plant is None:
-        return failure_response("Plant not found!")
-
-    # delete users associated with plant 
-    associated_users = User.query.filter_by(plant_name=plant.name)
-    for u in associated_users:
-        db.session.delete(u)
-        db.session.commit()
-
-    db.session.delete(plant)
-    db.session.commit()
-
-    # delete config associated with plant 
-    associated_config = Configuration.query.filter_by(id=plant.config_id)
-    db.session.delete(associated_config)
-    db.session.commit()
-    serialized_plant = serialize_model(plant)
-    return success_response(serialized_plant)
-
 # -- USER ROUTES ------------------------------------------------------
 @app.route("/api/users/", methods=["POST"])
 def create_user():
@@ -220,3 +193,30 @@ def delete_user(user_id):
     db.session.commit()
     serialized_user = serialize_model(user)
     return success_response(serialized_user)
+
+@app.route("/api/plants/<int:plant_id>/", methods=["DELETE"])
+def delete_plant(plant_id):
+    """
+    Endpoint for deleting a plant by id
+
+    Must also delete associated Configuration and Users/Plant Operators
+    """
+    plant = Plant.query.filter_by(id=plant_id).first()
+    if plant is None:
+        return failure_response("Plant not found!")
+
+    # delete users associated with plant 
+    associated_users = User.query.filter_by(plant_name=plant.name)
+    for u in associated_users:
+        db.session.delete(u)
+        db.session.commit()
+
+    db.session.delete(plant)
+    db.session.commit()
+
+    # delete config associated with plant 
+    associated_config = Configuration.query.filter_by(id=plant.config_id)
+    db.session.delete(associated_config)
+    db.session.commit()
+    serialized_plant = serialize_model(plant)
+    return success_response(serialized_plant)
