@@ -9,3 +9,7 @@ python-dotenv==1.0.1
 SQLAlchemy==2.0.28
 typing_extensions==4.10.0
 Werkzeug==3.0.1
+iniconfig==2.0.0
+packaging==24.0
+pluggy==1.4.0
+pytest==8.1.1

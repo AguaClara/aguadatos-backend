@@ -2,6 +2,7 @@
 __pycache__
 venv
 aguadatos.db
+test_aguadatos.db
 .DS_Store
 .envrc
 virtualenv
