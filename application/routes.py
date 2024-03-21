@@ -187,19 +187,6 @@ def create_user():
     except SQLAlchemyError as e:
         db.session.rollback()
         return failure_response("Internal Server Error", 500)
-    
-@app.route("/api/users/<int:user_id>/", methods=["DELETE"])
-def delete_user(user_id):
-    """
-    Endpoint for deleting a user by id
-    """
-    user = User.query.filter_by(id=user_id).first()
-    if user is None:
-        return failure_response("User not found!")
-    db.session.delete(user)
-    db.session.commit()
-    serialized_user = serialize_model(user)
-    return success_response(serialized_user)
 
 @app.route("/api/users/<int:user_id>/")
 def get_specific_user(user_id):
@@ -220,3 +207,16 @@ def get_all_users():
     return success_response({"users": [serialize_model(u) for u in User.query.all()]})
 
 # get all users for a plant 
+
+@app.route("/api/users/<int:user_id>/", methods=["DELETE"])
+def delete_user(user_id):
+    """
+    Endpoint for deleting a user by id
+    """
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        return failure_response("User not found!")
+    db.session.delete(user)
+    db.session.commit()
+    serialized_user = serialize_model(user)
+    return success_response(serialized_user)
