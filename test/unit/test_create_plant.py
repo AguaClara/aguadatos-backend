@@ -9,7 +9,7 @@ def test_create_plant(test_client, init_database, validate_response):
     """
     GIVEN a new plant information
     WHEN a new plant is created
-    THEN valid response is returned, and response's information is correct
+    THEN valid response is returned, response's information is correct and written to the database
     """
     new_plant = {
         "name": "AguaClara4",
@@ -38,13 +38,11 @@ def test_create_plant(test_client, init_database, validate_response):
     # Check if new plant is written to the database correctly
     created_plant = Plant.query.get(data['id'])
     assert created_plant is not None, "Plant not created in the database"
-
     for attribute in direct_attributes:
         assert getattr(created_plant, attribute) == new_plant[attribute], mismatch_error("Written Output", new_plant[attribute], getattr(created_plant, attribute))
 
     created_config = Configuration.query.get(created_plant.config_id)
     assert created_config is not None, "Configuration not created in the database"
-
     for attribute in config_attributes:
         assert getattr(created_config, attribute) == new_plant[attribute], mismatch_error("Written Output", new_plant[attribute], getattr(created_config, attribute))
 
