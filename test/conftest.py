@@ -10,7 +10,7 @@ from application.models import User, Plant, Configuration
 
 
 # generalized status code and content type assert
-@pytest.fixture
+@pytest.fixture(scope='module')
 def validate_response():
     def _validate(response, status_code, content_type):
         """
@@ -25,7 +25,7 @@ def validate_response():
     return _validate
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope='session')
 def test_client():
     # Set the Testing configuration prior to creating the Flask application
     os.environ['CONFIG_TYPE'] = 'config.TestingConfig'
