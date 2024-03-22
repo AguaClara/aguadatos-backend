@@ -18,6 +18,8 @@ def test_config_model():
     assert new_config.num_filters == 4
     assert new_config.num_clarifiers == 2
 
+# ------------------------------------------------------------------------------------------
+
 # ensure that the Plant model is working as expected
 def test_plant_model():
     """

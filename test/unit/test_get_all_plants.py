@@ -24,3 +24,5 @@ def test_get_all_plants(test_client, init_database, validate_response):
 
     for expected, actual in zip(expected_plants, data['plants']):
         assert expected == actual, mismatch_error("Response Output", expected, actual)
+
+# ------------------------------------------------------------------------------------------

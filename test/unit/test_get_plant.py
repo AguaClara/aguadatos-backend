@@ -15,6 +15,7 @@ def test_get_plant_1(test_client, init_database, validate_response):
     for key in expected_plant:
         assert data[key] == expected_plant[key], mismatch_error("Response Output", expected_plant[key], data[key])
 
+# ------------------------------------------------------------------------------------------
 
 def test_get_plant_4(test_client, init_database, validate_response):
     """
