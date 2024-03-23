@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, '.env'))
 
+#create 'instance' folder in the root directory if not existent
+if not os.path.exists(os.path.join(basedir, 'instance')):
+    os.makedirs(os.path.join(basedir, 'instance'))
 
 class Config:
     """Set Flask configuration from .env file."""
