@@ -30,7 +30,7 @@ def failure_response(message, status=400):
     Generalized failure response function
 
     :param data: serialized data to be returned in the response
-    :param status: status code of the response with default 200
+    :param status: status code of the response with default 400
     :return: JSON response with data and status code
     """
     return jsonify({"error": message}), status

@@ -24,6 +24,6 @@ def test_get_plant_4(test_client, init_database, validate_response):
     THEN return a 400 error
     """
     response = test_client.get('/api/plants/4/')
-    assert response.status_code == 400
+    assert response.status_code == 404, mismatch_error("Expected code status", 404, response.status_code)
 
-
+# ------------------------------------------------------------------------------------------
