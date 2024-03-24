@@ -1,7 +1,7 @@
 """
 This module contains fixtures that are used by the test modules in the test directory.
 
-Utilize "python -m pytest -vclear -s --setup-show" to initialize the test environment and run the tests.
+Utilize "python3 -m pytest -vclear -s --setup-show" to initialize the test environment and run the tests.
 """
 import os
 import pytest

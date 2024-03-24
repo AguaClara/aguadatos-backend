@@ -31,9 +31,9 @@ def test_create_plant(test_client, init_database, validate_response):
         assert data[key] == new_plant[key], mismatch_error("Response Output", new_plant[key], data[key])
 
     # Check the configuration attributes in the response
-    assert 'config' in data, "Config not in response"
+    assert 'config_id' in data, "Config not in response"
     for key in config_attributes:
-        assert data['config'][key] == new_plant[key], mismatch_error("Response Output", new_plant[key], data['config'][key])
+        assert data['config_id'][key] == new_plant[key], mismatch_error("Response Output", new_plant[key], data['config'][key])
 
     # Check if new plant is written to the database correctly
     created_plant = Plant.query.get(data['id'])

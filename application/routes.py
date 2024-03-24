@@ -54,7 +54,7 @@ def create_plant():
         db.session.commit()
         
         serialized_plant = serialize_model(new_plant)
-        serialized_plant['config'] = serialize_model(new_config)
+        serialized_plant['config_id'] = serialize_model(new_config)
         return success_response(serialized_plant, 201)
         # return success_response(serialized_plant, 201, headers={"Location": f"/api/plants/{new_plant.id}"})
     

@@ -21,7 +21,7 @@ def test_get_plant_4(test_client, init_database, validate_response):
     """
     GIVEN a plant ID that does not exist
     WHEN a plant is requested by ID
-    THEN return a 400 error
+    THEN return a 404 error
     """
     response = test_client.get('/api/plants/4/')
     assert response.status_code == 404, mismatch_error("Expected code status", 404, response.status_code)
